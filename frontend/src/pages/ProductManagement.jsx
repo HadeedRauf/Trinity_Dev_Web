@@ -16,39 +16,10 @@ export default function ProductManagement() {
     quantity: '',
     nutritional_info: {}
   });
-
-  // Helper: compute a short nutrition summary (calories, fat, carbs, sugars, proteins, salt)
-  const computeNutritionPerQuantity = (nutritional_info = {}, quantity) => {
-    try {
-      const nutr = nutritional_info || {};
-      const n = nutr.nutriments || nutr; // accept either the raw nutriments object or a wrapper
-      const qty = parseFloat(quantity) || 0;
-
-      const pick = (key100g, keyServing) => {
-        // prefer per 100g value and scale by quantity assuming quantity is grams
-        const val100g = n[`${key100g}_100g`] ?? n[key100g];
-        const valServing = n[`${keyServing}_serving`] ?? n[`${keyServing}_100g`];
-        if (val100g != null && !isNaN(val100g) && qty > 0) {
-          return (parseFloat(val100g) * (qty / 100));
-        }
-        if (valServing != null && !isNaN(valServing)) return parseFloat(valServing);
-        return null;
-      };
-
-      const kcal = pick('energy-kcal', 'energy-kcal');
-      const fat = pick('fat', 'fat');
-      const sat = pick('saturated-fat', 'saturated-fat');
-      const carbs = pick('carbohydrates', 'carbohydrates');
-      const sugars = pick('sugars', 'sugars');
-      const proteins = pick('proteins', 'proteins');
-      const salt = pick('salt', 'salt');
-
-      return { kcal, fat, sat, carbs, sugars, proteins, salt };
-    } catch (err) {
-      console.error('computeNutrition error', err);
-      return {};
-    }
-  };
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedProducts, setSelectedProducts] = useState(new Set());
+  const [deleting, setDeleting] = useState(false);
+  const [sortConfig, setSortConfig] = useState({ key: 'name', direction: 'asc' });
 
   useEffect(() => {
     loadProducts();
@@ -60,6 +31,7 @@ export default function ProductManagement() {
       const response = await getProducts();
       setProducts(Array.isArray(response.data) ? response.data : []);
       setError('');
+      setSelectedProducts(new Set());
     } catch (err) {
       console.error('Load products error:', err);
       setError('Failed to load products');
@@ -98,6 +70,50 @@ export default function ProductManagement() {
     }
   };
 
+  const handleBulkDelete = async () => {
+    if (selectedProducts.size === 0) {
+      alert('Please select products to delete');
+      return;
+    }
+
+    if (!window.confirm(`Delete ${selectedProducts.size} product(s)?`)) {
+      return;
+    }
+
+    setDeleting(true);
+    try {
+      for (const productId of selectedProducts) {
+        await deleteProduct(productId);
+      }
+      setSelectedProducts(new Set());
+      loadProducts();
+      alert('Products deleted successfully');
+    } catch (err) {
+      console.error('Bulk delete error:', err);
+      setError('Failed to delete some products');
+    } finally {
+      setDeleting(false);
+    }
+  };
+
+  const toggleSelectProduct = (id) => {
+    const newSelected = new Set(selectedProducts);
+    if (newSelected.has(id)) {
+      newSelected.delete(id);
+    } else {
+      newSelected.add(id);
+    }
+    setSelectedProducts(newSelected);
+  };
+
+  const toggleSelectAll = () => {
+    if (selectedProducts.size === filteredProducts.length) {
+      setSelectedProducts(new Set());
+    } else {
+      setSelectedProducts(new Set(filteredProducts.map(p => p.id)));
+    }
+  };
+
   const handleEdit = (product) => {
     setEditingProduct(product);
     setFormData({
@@ -125,26 +141,15 @@ export default function ProductManagement() {
     setEditingProduct(null);
   };
 
-  // Nutrition sheet state
-  const [showNutritionSheet, setShowNutritionSheet] = useState(false);
-  const [selectedNutritionProduct, setSelectedNutritionProduct] = useState(null);
-
-  const closeNutritionSheet = () => {
-    setShowNutritionSheet(false);
-    setSelectedNutritionProduct(null);
-  };
-
   const handleOpenFoodFactsSearch = async (query) => {
     try {
-      // searchOpenFoodFacts returns an array of products (or empty array)
       const results = await searchOpenFoodFacts(query);
       if (!Array.isArray(results) || results.length === 0) {
         alert('No results from OpenFoodFacts');
         return;
       }
 
-      const ofProduct = results[0]; // pick first result
-
+      const ofProduct = results[0];
       const nutriments = ofProduct.nutriments || {};
 
       setFormData({
@@ -161,287 +166,285 @@ export default function ProductManagement() {
     }
   };
 
-  if (loading) {
-    return (
-      <div style={{ padding: '40px', textAlign: 'center' }}>
-        <h2>Loading products...</h2>
-      </div>
-    );
-  }
+  const filteredProducts = products.filter(p =>
+    p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (p.brand && p.brand.toLowerCase().includes(searchTerm.toLowerCase())) ||
+    (p.category && p.category.toLowerCase().includes(searchTerm.toLowerCase()))
+  );
+
+  const sortedProducts = [...filteredProducts].sort((a, b) => {
+    const aValue = a[sortConfig.key] || '';
+    const bValue = b[sortConfig.key] || '';
+    
+    if (sortConfig.key === 'price' || sortConfig.key === 'quantity') {
+      return sortConfig.direction === 'asc' 
+        ? parseFloat(aValue) - parseFloat(bValue)
+        : parseFloat(bValue) - parseFloat(aValue);
+    }
+    
+    const comparison = String(aValue).localeCompare(String(bValue));
+    return sortConfig.direction === 'asc' ? comparison : -comparison;
+  });
+
+  const handleSort = (key) => {
+    setSortConfig({
+      key,
+      direction: sortConfig.key === key && sortConfig.direction === 'asc' ? 'desc' : 'asc'
+    });
+  };
+
+  const SortIcon = ({ columnKey }) => {
+    if (sortConfig.key !== columnKey) return ' ↕️';
+    return sortConfig.direction === 'asc' ? ' ↑' : ' ↓';
+  };
 
   return (
-    <div style={{ padding: '20px' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px' }}>
-        <h1>Product Management</h1>
-        <button 
-          onClick={() => { resetForm(); setShowModal(true); }}
-          style={{
-            padding: '10px 20px',
-            backgroundColor: '#007bff',
-            color: 'white',
-            border: 'none',
-            borderRadius: '4px',
-            cursor: 'pointer'
-          }}
-        >
-          + Add Product
+    <div className="product-management">
+      <h1>Product Management</h1>
+
+      {error && <div className="error-message">{error}</div>}
+
+      <div className="section-header">
+        <button className="btn-primary" onClick={() => { resetForm(); setShowModal(true); }}>
+          ➕ Add Product
         </button>
       </div>
 
-      {error && (
-        <div style={{ padding: '10px', backgroundColor: '#f8d7da', color: '#721c24', marginBottom: '20px', borderRadius: '4px' }}>
-          {error}
+      {/* Search Bar */}
+      <div className="search-box">
+        <input
+          type="text"
+          placeholder="Search products by name, brand, or category..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="search-input"
+        />
+      </div>
+
+      {/* Bulk Actions */}
+      {selectedProducts.size > 0 && (
+        <div className="bulk-actions">
+          <span>{selectedProducts.size} product(s) selected</span>
+          <button 
+            className="btn-danger" 
+            onClick={handleBulkDelete}
+            disabled={deleting}
+          >
+            🗑️ {deleting ? 'Deleting...' : 'Delete Selected'}
+          </button>
         </div>
       )}
 
-      <table style={{ width: '100%', borderCollapse: 'collapse', backgroundColor: 'white', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
-            <thead>
-          <tr style={{ backgroundColor: '#f8f9fa' }}>
-            <th style={{ padding: '12px', textAlign: 'left', borderBottom: '2px solid #dee2e6' }}>Name</th>
-            <th style={{ padding: '12px', textAlign: 'left', borderBottom: '2px solid #dee2e6' }}>Brand</th>
-            <th style={{ padding: '12px', textAlign: 'left', borderBottom: '2px solid #dee2e6' }}>Price</th>
-            <th style={{ padding: '12px', textAlign: 'left', borderBottom: '2px solid #dee2e6' }}>Quantity</th>
-                <th style={{ padding: '12px', textAlign: 'left', borderBottom: '2px solid #dee2e6' }}>Category</th>
-            <th style={{ padding: '12px', textAlign: 'left', borderBottom: '2px solid #dee2e6' }}>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {!Array.isArray(products) || products.length === 0 ? (
-            <tr>
-              <td colSpan="6" style={{ padding: '20px', textAlign: 'center', color: '#6c757d' }}>
-                No products found. Click "Add Product" to create one.
-              </td>
-            </tr>
-          ) : (
-            products.map(product => (
-              <tr key={product.id} style={{ borderBottom: '1px solid #dee2e6' }}>
-                <td style={{ padding: '12px' }}>{product.name}</td>
-                <td style={{ padding: '12px' }}>{product.brand}</td>
-                <td style={{ padding: '12px' }}>${parseFloat(product.price || 0).toFixed(2)}</td>
-                <td style={{ padding: '12px' }}>{product.quantity}</td>
-                <td style={{ padding: '12px' }}>{product.category}</td>
-                <td style={{ padding: '12px' }}>
-                  <button 
-                    onClick={() => handleEdit(product)}
-                    style={{ marginRight: '8px', padding: '5px 10px', cursor: 'pointer' }}
-                  >
-                    Edit
-                  </button>
-                  <button 
-                    onClick={() => handleDelete(product.id)}
-                    style={{ padding: '5px 10px', cursor: 'pointer', backgroundColor: '#dc3545', color: 'white', border: 'none', borderRadius: '4px' }}
-                  >
-                    Delete
-                  </button>
-                  <button
-                    onClick={() => { setSelectedNutritionProduct(product); setShowNutritionSheet(true); }}
-                    title="View nutrition per 1 quantity"
-                    style={{ marginLeft: '8px', padding: '5px 8px', cursor: 'pointer', backgroundColor: '#17a2b8', color: 'white', border: 'none', borderRadius: '4px' }}
-                  >
-                    Nutrition
-                  </button>
-                </td>
-              </tr>
-            ))
-          )}
-        </tbody>
-      </table>
+      {loading ? (
+        <div className="loading">Loading products...</div>
+      ) : filteredProducts.length === 0 ? (
+        <div className="no-products">No products found</div>
+      ) : (
+        <>
+          <div className="select-all-container">
+            <label>
+              <input
+                type="checkbox"
+                checked={selectedProducts.size === filteredProducts.length && filteredProducts.length > 0}
+                onChange={toggleSelectAll}
+              />
+              Select All ({filteredProducts.length})
+            </label>
+          </div>
 
+          {/* Interactive Data Grid */}
+          <div className="products-table-wrapper">
+            <table className="products-table">
+              <thead>
+                <tr>
+                  <th className="checkbox-column">
+                    <input
+                      type="checkbox"
+                      checked={selectedProducts.size === filteredProducts.length && filteredProducts.length > 0}
+                      onChange={toggleSelectAll}
+                    />
+                  </th>
+                  <th onClick={() => handleSort('name')} className="sortable">
+                    Product Name <SortIcon columnKey="name" />
+                  </th>
+                  <th onClick={() => handleSort('brand')} className="sortable">
+                    Brand <SortIcon columnKey="brand" />
+                  </th>
+                  <th onClick={() => handleSort('category')} className="sortable">
+                    Category <SortIcon columnKey="category" />
+                  </th>
+                  <th onClick={() => handleSort('price')} className="sortable">
+                    Price <SortIcon columnKey="price" />
+                  </th>
+                  <th onClick={() => handleSort('quantity')} className="sortable">
+                    Quantity <SortIcon columnKey="quantity" />
+                  </th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {sortedProducts.map((product) => (
+                  <tr 
+                    key={product.id} 
+                    className={selectedProducts.has(product.id) ? 'selected-row' : ''}
+                  >
+                    <td className="checkbox-column">
+                      <input
+                        type="checkbox"
+                        checked={selectedProducts.has(product.id)}
+                        onChange={() => toggleSelectProduct(product.id)}
+                      />
+                    </td>
+                    <td className="product-name">
+                      <strong>{product.name}</strong>
+                    </td>
+                    <td>{product.brand || '-'}</td>
+                    <td>
+                      <span className="category-badge">{product.category || 'Uncategorized'}</span>
+                    </td>
+                    <td className="price-cell">
+                      ${parseFloat(product.price || 0).toFixed(2)}
+                    </td>
+                    <td className="quantity-cell">
+                      {product.quantity || 0} pcs
+                    </td>
+                    <td className="actions-cell">
+                      <button 
+                        className="btn-action btn-edit" 
+                        onClick={() => handleEdit(product)}
+                        title="Edit product"
+                      >
+                        ✏️ Edit
+                      </button>
+                      <button 
+                        className="btn-action btn-delete" 
+                        onClick={() => handleDelete(product.id)}
+                        title="Delete product"
+                      >
+                        🗑️ Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          <div className="products-count">
+            Total: {filteredProducts.length} product(s)
+          </div>
+        </>
+      )}
+
+      {/* Modal */}
       {showModal && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundColor: 'rgba(0,0,0,0.5)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 1000
-        }}>
-          <div style={{
-            backgroundColor: 'white',
-            padding: '30px',
-            borderRadius: '8px',
-            maxWidth: '600px',
-            width: '90%',
-            maxHeight: '90vh',
-            overflow: 'auto'
-          }}>
+        <div className="modal-overlay">
+          <div className="modal-content">
             <h2>{editingProduct ? 'Edit Product' : 'Add Product'}</h2>
-            
             <form onSubmit={handleSubmit}>
               <div style={{ marginBottom: '15px' }}>
                 <label style={{ display: 'block', marginBottom: '5px' }}>Search OpenFoodFacts (barcode or name):</label>
                 <div style={{ display: 'flex', gap: '10px' }}>
                   <input
                     type="text"
-                    id="barcode-input"
-                    placeholder="Enter barcode or product name (e.g. 'nutella')"
-                    style={{ flex: 1, padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
+                    placeholder="e.g., 7622201513442 or Apple"
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        handleOpenFoodFactsSearch(e.target.value);
+                      }
+                    }}
+                    style={{ flex: 1, padding: '8px' }}
                   />
                   <button
                     type="button"
-                    onClick={() => {
-                      const barcode = document.getElementById('barcode-input').value;
-                      if (barcode) handleOpenFoodFactsSearch(barcode);
+                    onClick={(e) => {
+                      const input = e.target.previousElementSibling;
+                      handleOpenFoodFactsSearch(input.value);
                     }}
-                    style={{ padding: '8px 16px', backgroundColor: '#28a745', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+                    className="btn-secondary"
                   >
                     Search
                   </button>
                 </div>
               </div>
-              {/* Nutrition preview from OpenFoodFacts (if available) */}
-              {formData.nutritional_info && formData.nutritional_info.nutriments && (
-                <div style={{ marginBottom: '15px', padding: '10px', backgroundColor: '#f8f9fa', borderRadius: '6px' }}>
-                  <strong>OpenFoodFacts suggestion:</strong>
-                  <div style={{ marginTop: '8px', fontSize: '13px', color: '#495057' }}>
-                    {(() => {
-                      const s = computeNutritionPerQuantity(formData.nutritional_info, formData.quantity || 100);
-                      return (
-                        <div>
-                          {s.kcal != null && <div>Calories (est): {Number(s.kcal).toFixed(0)} kcal</div>}
-                          {s.fat != null && <div>Fat: {Number(s.fat).toFixed(1)} g</div>}
-                          {s.carbs != null && <div>Carbs: {Number(s.carbs).toFixed(1)} g</div>}
-                          {s.sugars != null && <div>Sugars: {Number(s.sugars).toFixed(1)} g</div>}
-                          {s.proteins != null && <div>Protein: {Number(s.proteins).toFixed(1)} g</div>}
-                          {s.salt != null && <div>Salt: {Number(s.salt).toFixed(2)} g</div>}
-                        </div>
-                      );
-                    })()}
-                  </div>
-                </div>
-              )}
 
               <div style={{ marginBottom: '15px' }}>
-                <label style={{ display: 'block', marginBottom: '5px' }}>Name *:</label>
+                <label>Product Name</label>
                 <input
                   type="text"
-                  required
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  style={{ width: '100%', padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
+                  required
+                  className="form-input"
                 />
               </div>
 
               <div style={{ marginBottom: '15px' }}>
-                <label style={{ display: 'block', marginBottom: '5px' }}>Brand:</label>
+                <label>Brand</label>
                 <input
                   type="text"
                   value={formData.brand}
                   onChange={(e) => setFormData({ ...formData, brand: e.target.value })}
-                  style={{ width: '100%', padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
+                  className="form-input"
                 />
               </div>
 
               <div style={{ marginBottom: '15px' }}>
-                <label style={{ display: 'block', marginBottom: '5px' }}>Price *:</label>
+                <label>Price</label>
                 <input
                   type="number"
                   step="0.01"
-                  required
                   value={formData.price}
                   onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-                  style={{ width: '100%', padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
+                  required
+                  className="form-input"
                 />
               </div>
 
               <div style={{ marginBottom: '15px' }}>
-                <label style={{ display: 'block', marginBottom: '5px' }}>Quantity *:</label>
+                <label>Quantity</label>
                 <input
                   type="number"
-                  required
                   value={formData.quantity}
                   onChange={(e) => setFormData({ ...formData, quantity: e.target.value })}
-                  style={{ width: '100%', padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
+                  className="form-input"
                 />
               </div>
 
               <div style={{ marginBottom: '15px' }}>
-                <label style={{ display: 'block', marginBottom: '5px' }}>Category:</label>
+                <label>Category</label>
                 <input
                   type="text"
                   value={formData.category}
                   onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                  style={{ width: '100%', padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
+                  className="form-input"
                 />
               </div>
 
               <div style={{ marginBottom: '15px' }}>
-                <label style={{ display: 'block', marginBottom: '5px' }}>Picture URL:</label>
+                <label>Picture URL</label>
                 <input
                   type="url"
                   value={formData.picture}
                   onChange={(e) => setFormData({ ...formData, picture: e.target.value })}
-                  style={{ width: '100%', padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
+                  className="form-input"
                 />
               </div>
 
-              <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end', marginTop: '20px' }}>
+              <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
+                <button type="submit" className="btn-primary">
+                  {editingProduct ? 'Update Product' : 'Add Product'}
+                </button>
                 <button
                   type="button"
                   onClick={() => { setShowModal(false); resetForm(); }}
-                  style={{ padding: '10px 20px', backgroundColor: '#6c757d', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+                  className="btn-secondary"
                 >
                   Cancel
                 </button>
-                <button
-                  type="submit"
-                  style={{ padding: '10px 20px', backgroundColor: '#007bff', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
-                >
-                  {editingProduct ? 'Update' : 'Create'}
-                </button>
               </div>
             </form>
-          </div>
-        </div>
-      )}
-
-      {showNutritionSheet && selectedNutritionProduct && (
-        <div style={{
-          position: 'fixed',
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundColor: 'white',
-          borderTopLeftRadius: '12px',
-          borderTopRightRadius: '12px',
-          boxShadow: '0 -6px 24px rgba(0,0,0,0.15)',
-          zIndex: 1200,
-          maxHeight: '60vh',
-          overflow: 'auto',
-          padding: '20px'
-        }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <h3 style={{ margin: 0 }}>{selectedNutritionProduct.name} — Nutrition (per 1 quantity)</h3>
-            <button onClick={closeNutritionSheet} style={{ background: 'transparent', border: 'none', fontSize: '18px', cursor: 'pointer' }}>✕</button>
-          </div>
-          <div style={{ marginTop: '12px', fontSize: '14px', color: '#333' }}>
-            <div><strong>Quantity:</strong> {selectedNutritionProduct.quantity || '—'}</div>
-            <div style={{ marginTop: '10px' }}>
-              {selectedNutritionProduct.nutritional_info && selectedNutritionProduct.nutritional_info.nutriments ? (
-                (() => {
-                  // Compute nutrition per one unit: interpret 'per 1 quantity' as nutrition for the product's quantity value
-                  const perOne = computeNutritionPerQuantity(selectedNutritionProduct.nutritional_info, selectedNutritionProduct.quantity || 1);
-                  return (
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-                      {perOne.kcal != null && <div><strong>Calories</strong><div>{Number(perOne.kcal).toFixed(0)} kcal</div></div>}
-                      {perOne.fat != null && <div><strong>Fat</strong><div>{Number(perOne.fat).toFixed(1)} g</div></div>}
-                      {perOne.sat != null && <div><strong>Saturated</strong><div>{Number(perOne.sat).toFixed(1)} g</div></div>}
-                      {perOne.carbs != null && <div><strong>Carbs</strong><div>{Number(perOne.carbs).toFixed(1)} g</div></div>}
-                      {perOne.sugars != null && <div><strong>Sugars</strong><div>{Number(perOne.sugars).toFixed(1)} g</div></div>}
-                      {perOne.proteins != null && <div><strong>Protein</strong><div>{Number(perOne.proteins).toFixed(1)} g</div></div>}
-                      {perOne.salt != null && <div><strong>Salt</strong><div>{Number(perOne.salt).toFixed(2)} g</div></div>}
-                      {(!perOne.kcal && !perOne.fat && !perOne.carbs) && <div style={{ gridColumn: '1 / -1', color: '#6c757d' }}>No nutrition data available for this product.</div>}
-                    </div>
-                  );
-                })()
-              ) : (
-                <div style={{ color: '#6c757d' }}>No nutrition data available for this product.</div>
-              )}
-            </div>
           </div>
         </div>
       )}

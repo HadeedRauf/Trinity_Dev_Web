@@ -5,7 +5,7 @@ import './Login.css';
 
 export default function Login() {
   const [username, setUsername] = useState('admin');
-  const [password, setPassword] = useState('admin123');
+  const [password, setPassword] = useState('admin');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   
@@ -60,6 +60,10 @@ export default function Login() {
             {loading ? 'Logging in...' : 'Login'}
           </button>
         </form>
+
+        <div className="login-hint">
+          <small>Demo credentials: <strong>admin</strong> / <strong>admin</strong></small>
+        </div>
       </div>
     </div>
   );

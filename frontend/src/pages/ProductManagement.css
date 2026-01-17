@@ -1,470 +1,423 @@
-/* ===== PRODUCT MANAGEMENT - INSTAGRAM LIGHT THEME ===== */
-
 .product-management {
-  padding: 24px;
-  background: transparent;
+  padding: 20px;
+  max-width: 1400px;
+  margin: 0 auto;
 }
 
-/* Products Section */
-.products-section {
-  background: #FFFFFF;
-  border: 1px solid #DBDBDB;
-  border-radius: 10px;
-  padding: 24px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
-  margin-top: 24px;
+.product-management h1 {
+  color: #2c3e50;
+  margin-bottom: 30px;
+  text-align: center;
+  font-size: 28px;
 }
 
-/* Product Cards Grid */
-.products-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 16px;
-  margin-top: 16px;
-}
-
-.product-card {
-  background: #FFFFFF;
-  border: 1px solid #DBDBDB;
-  border-radius: 10px;
-  padding: 16px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
-  transition: all 0.2s ease;
-}
-
-.product-card:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
-  transform: translateY(-2px);
-}
-
-.product-image {
-  width: 100%;
-  height: 200px;
-  object-fit: cover;
-  border-radius: 8px;
-  margin-bottom: 12px;
-}
-
-.product-info h3 {
-  font-size: 16px;
-  font-weight: 600;
-  color: #262626;
-  margin-bottom: 8px;
-  text-transform: none;
-  letter-spacing: 0;
-}
-
-.product-price {
-  font-size: 18px;
-  font-weight: 700;
-  color: #0095F6;
-  margin-bottom: 8px;
-}
-
-.product-sku {
-  font-size: 12px;
-  color: #8E8E8E;
-  margin-bottom: 12px;
-}
-
-.product-actions {
+/* Header Section */
+.section-header {
+  margin-bottom: 20px;
   display: flex;
-  gap: 8px;
-  margin-top: 12px;
+  gap: 10px;
 }
 
-.product-actions button {
-  flex: 1;
-  padding: 8px 12px;
-  font-size: 13px;
-  background: #0095F6;
-  color: #FFFFFF;
+.btn-primary {
+  background-color: #3498db;
+  color: white;
   border: none;
-  border-radius: 6px;
+  padding: 12px 20px;
+  border-radius: 4px;
   cursor: pointer;
-  font-weight: 600;
-  transition: all 0.2s ease;
-}
-
-.product-actions button:hover {
-  background: #1877F2;
-}
-
-.product-actions button.delete {
-  background: transparent;
-  color: #ED4956;
-  border: 1px solid #ED4956;
-}
-
-.product-actions button.delete:hover {
-  background: #FEF2F2;
-}
-
-/* Product Form */
-.product-form {
-  background: #FFFFFF;
-  border: 1px solid #DBDBDB;
-  border-radius: 10px;
-  padding: 24px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
-  margin-top: 16px;
-}
-
-.form-section {
-  margin-bottom: 24px;
-}
-
-.form-section h3 {
-  font-size: 16px;
-  font-weight: 600;
-  color: #262626;
-  margin-bottom: 12px;
-  text-transform: none;
-  border-bottom: 1px solid #EFEFEF;
-  padding-bottom: 8px;
-}
-
-.form-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-  margin-bottom: 16px;
-}
-
-.form-row.full {
-  grid-template-columns: 1fr;
-}
-
-.form-group {
-  margin-bottom: 16px;
-}
-
-.form-group label {
-  display: block;
   font-size: 14px;
-  font-weight: 500;
-  color: #262626;
-  margin-bottom: 8px;
-  text-transform: none;
-}
-
-.form-group input,
-.form-group select,
-.form-group textarea {
-  width: 100%;
-  padding: 9px 10px;
-  background: #FAFAFA;
-  color: #262626;
-  border: 1px solid #DBDBDB;
-  border-radius: 6px;
-  font-size: 14px;
-  font-family: inherit;
-  transition: all 0.2s ease;
-}
-
-.form-group input:focus,
-.form-group select:focus,
-.form-group textarea:focus {
-  border-color: #0095F6;
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(0, 149, 246, 0.1);
-}
-
-.form-group textarea {
-  resize: vertical;
-  min-height: 80px;
-}
-
-.form-actions {
-  display: flex;
-  gap: 12px;
-  justify-content: flex-end;
-  margin-top: 24px;
-  padding-top: 16px;
-  border-top: 1px solid #EFEFEF;
-}
-
-.form-actions button {
-  padding: 10px 20px;
   font-weight: 600;
-  font-size: 14px;
-  border-radius: 8px;
-  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-primary:hover {
+  background-color: #2980b9;
+}
+
+.btn-secondary {
+  background-color: #95a5a6;
+  color: white;
   border: none;
-  transition: all 0.2s ease;
-  text-transform: none;
+  padding: 10px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: background 0.2s;
 }
 
-.form-actions .btn-primary {
-  background: #0095F6;
-  color: #FFFFFF;
+.btn-secondary:hover {
+  background-color: #7f8c8d;
 }
 
-.form-actions .btn-primary:hover {
-  background: #1877F2;
-}
-
-.form-actions .btn-secondary {
-  background: transparent;
-  color: #0095F6;
-  border: 1px solid #DBDBDB;
-}
-
-.form-actions .btn-secondary:hover {
-  background: #FAFAFA;
-}
-
-/* Search & Filter */
-.search-filter {
-  display: flex;
-  gap: 12px;
-  margin-bottom: 16px;
-}
-
+/* Search Box */
 .search-box {
-  flex: 1;
-  position: relative;
+  margin-bottom: 20px;
 }
 
-.search-box input {
+.search-input {
   width: 100%;
-  padding: 9px 10px;
-  background: #FAFAFA;
-  color: #262626;
-  border: 1px solid #DBDBDB;
-  border-radius: 6px;
+  padding: 12px 15px;
   font-size: 14px;
-  transition: all 0.2s ease;
+  border: 2px solid #ecf0f1;
+  border-radius: 6px;
+  transition: border-color 0.2s;
+  box-sizing: border-box;
 }
 
-.search-box input:focus {
-  border-color: #0095F6;
+.search-input:focus {
   outline: none;
-  box-shadow: 0 0 0 3px rgba(0, 149, 246, 0.1);
+  border-color: #3498db;
 }
 
-.filter-dropdown {
-  padding: 9px 10px;
-  background: #FAFAFA;
-  color: #262626;
-  border: 1px solid #DBDBDB;
+/* Bulk Actions */
+.bulk-actions {
+  background: #fff3cd;
+  border: 2px solid #ffc107;
   border-radius: 6px;
+  padding: 15px 20px;
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 500;
+}
+
+.bulk-actions span {
+  color: #856404;
   font-size: 14px;
+}
+
+.btn-danger {
+  background: #e74c3c;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 4px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  font-weight: 600;
+  font-size: 14px;
+  transition: background 0.2s;
 }
 
-.filter-dropdown:focus {
-  border-color: #0095F6;
-  outline: none;
+.btn-danger:hover:not(:disabled) {
+  background: #c0392b;
 }
 
-/* Product Table */
-.product-table {
+.btn-danger:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Select All */
+.select-all-container {
+  margin-bottom: 20px;
+  padding: 12px 15px;
+  background: #f8f9fa;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+}
+
+.select-all-container label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  margin: 0;
+  color: #2c3e50;
+}
+
+.select-all-container input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+
+/* Table Styles */
+.products-table-wrapper {
+  background: white;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+
+.products-table {
   width: 100%;
   border-collapse: collapse;
-  background: #FFFFFF;
-  border: 1px solid #DBDBDB;
-  border-radius: 10px;
-  overflow: hidden;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
-  margin-top: 16px;
 }
 
-.product-table thead {
-  background: #FAFAFA;
+.products-table thead {
+  background: #f8f9fa;
+  border-bottom: 2px solid #ecf0f1;
 }
 
-.product-table th {
-  padding: 12px 16px;
+.products-table th {
+  padding: 15px;
   text-align: left;
+  color: #2c3e50;
   font-weight: 600;
-  font-size: 12px;
-  color: #8E8E8E;
+  font-size: 13px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  border-bottom: 1px solid #DBDBDB;
-  background: #FAFAFA;
+  border-right: 1px solid #ecf0f1;
 }
 
-.product-table td {
-  padding: 12px 16px;
-  color: #262626;
-  font-size: 14px;
-  border-bottom: 1px solid #EFEFEF;
+.products-table th:last-child {
+  border-right: none;
 }
 
-.product-table tbody tr:hover {
-  background: #FAFAFA;
-}
-
-.product-table img {
-  width: 40px;
-  height: 40px;
-  border-radius: 6px;
-  border: 1px solid #DBDBDB;
-  object-fit: cover;
-}
-
-/* Action Buttons in Table */
-.product-table .action-btn {
-  padding: 6px 12px;
-  margin-right: 4px;
-  font-size: 12px;
-  border: none;
-  border-radius: 6px;
+.products-table th.sortable {
   cursor: pointer;
-  font-weight: 600;
-  transition: all 0.2s ease;
-  text-transform: none;
+  user-select: none;
+  transition: background 0.2s;
 }
 
-.product-table .edit-btn {
-  background: #0095F6;
-  color: #FFFFFF;
+.products-table th.sortable:hover {
+  background: #ecf0f1;
 }
 
-.product-table .edit-btn:hover {
-  background: #1877F2;
-}
-
-.product-table .delete-btn {
-  background: transparent;
-  color: #ED4956;
-  border: 1px solid #ED4956;
-}
-
-.product-table .delete-btn:hover {
-  background: #FEF2F2;
-}
-
-/* Nutritional Info */
-.nutritional-info {
-  background: #FAFAFA;
-  border: 1px solid #EFEFEF;
-  border-radius: 8px;
-  padding: 12px;
-  margin-top: 8px;
-  font-size: 12px;
-}
-
-.nutritional-info h4 {
-  color: #262626;
-  font-weight: 600;
-  margin-bottom: 8px;
-  text-transform: none;
-}
-
-.nutritional-info p {
-  color: #8E8E8E;
-  margin: 4px 0;
-}
-
-/* Status & Messages */
-.success-message {
-  background: #F1F5FE;
-  color: #2ECC71;
-  border: 1px solid #BEE3F8;
-  border-radius: 8px;
-  padding: 12px 16px;
-  margin-bottom: 16px;
-  font-weight: 500;
+.products-table td {
+  padding: 15px;
+  border-bottom: 1px solid #ecf0f1;
+  color: #34495e;
   font-size: 14px;
+  border-right: 1px solid #ecf0f1;
 }
 
-.error-message {
-  background: #FEF2F2;
-  color: #ED4956;
-  border: 1px solid #FECACA;
-  border-radius: 8px;
-  padding: 12px 16px;
-  margin-bottom: 16px;
-  font-weight: 500;
-  font-size: 14px;
+.products-table td:last-child {
+  border-right: none;
 }
 
-.loading {
-  color: #8E8E8E;
-  font-size: 14px;
-  font-weight: 500;
+.products-table tbody tr {
+  transition: background 0.2s;
+}
+
+.products-table tbody tr:hover {
+  background: #f8f9fa;
+}
+
+.products-table tbody tr.selected-row {
+  background: #ecf7ff;
+  border-left: 4px solid #3498db;
+}
+
+/* Checkbox Column */
+.checkbox-column {
+  width: 50px;
   text-align: center;
-  padding: 24px;
-  text-transform: none;
+  padding: 15px 10px !important;
 }
 
+.checkbox-column input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+
+/* Product Name */
+.product-name {
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+/* Category Badge */
+.category-badge {
+  display: inline-block;
+  background: #ecf7ff;
+  color: #3498db;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* Price Cell */
+.price-cell {
+  color: #27ae60;
+  font-weight: 600;
+  text-align: right;
+}
+
+/* Quantity Cell */
+.quantity-cell {
+  text-align: center;
+}
+
+/* Actions Cell */
+.actions-cell {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.btn-action {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.btn-edit {
+  background: #3498db;
+  color: white;
+}
+
+.btn-edit:hover {
+  background: #2980b9;
+  transform: translateY(-1px);
+}
+
+.btn-delete {
+  background: #e74c3c;
+  color: white;
+}
+
+.btn-delete:hover {
+  background: #c0392b;
+  transform: translateY(-1px);
+}
+
+/* Products Count */
+.products-count {
+  text-align: right;
+  color: #7f8c8d;
+  font-size: 13px;
+  margin-top: 15px;
+}
+
+/* Loading State */
+.loading {
+  text-align: center;
+  padding: 60px 20px;
+  color: #7f8c8d;
+  font-size: 16px;
+}
+
+/* No Products */
 .no-products {
   text-align: center;
-  padding: 40px 24px;
-  color: #C7C7C7;
+  color: #7f8c8d;
+  padding: 60px 20px;
+  font-size: 16px;
+  background: white;
+  border-radius: 6px;
+}
+
+/* Error Message */
+.error-message {
+  background: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+  padding: 12px 15px;
+  border-radius: 4px;
+  margin-bottom: 20px;
   font-size: 14px;
 }
 
-/* OpenFoodFacts Integration */
-.barcode-search {
+/* Modal Overlay */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
   display: flex;
-  gap: 12px;
-  margin-bottom: 16px;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
 }
 
-.barcode-search input {
-  flex: 1;
-  padding: 9px 10px;
-  background: #FAFAFA;
-  color: #262626;
-  border: 1px solid #DBDBDB;
-  border-radius: 6px;
+.modal-content {
+  background: white;
+  border-radius: 8px;
+  padding: 30px;
+  max-width: 500px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+}
+
+.modal-content h2 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  color: #2c3e50;
+  font-size: 22px;
+}
+
+.modal-content form {
+  width: 100%;
+}
+
+.modal-content label {
+  display: block;
+  margin-bottom: 5px;
+  color: #2c3e50;
+  font-weight: 600;
   font-size: 14px;
 }
 
-.barcode-search button {
-  padding: 9px 16px;
-  background: #0095F6;
-  color: #FFFFFF;
-  border: none;
-  border-radius: 6px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
+.form-input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 2px solid #ecf0f1;
+  border-radius: 4px;
+  font-size: 14px;
+  box-sizing: border-box;
+  transition: border-color 0.2s;
 }
 
-.barcode-search button:hover {
-  background: #1877F2;
+.form-input:focus {
+  outline: none;
+  border-color: #3498db;
 }
 
-.openfoodfacts-results {
-  background: #FAFAFA;
-  border: 1px solid #EFEFEF;
-  border-radius: 8px;
-  padding: 12px;
-  margin-top: 12px;
-  max-height: 300px;
-  overflow-y: auto;
-}
+/* Responsive Design */
+@media (max-width: 768px) {
+  .product-management {
+    padding: 15px;
+  }
 
-.openfoodfacts-result {
-  background: #FFFFFF;
-  border: 1px solid #DBDBDB;
-  border-radius: 6px;
-  padding: 12px;
-  margin-bottom: 8px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
+  .products-table-wrapper {
+    overflow-x: auto;
+  }
 
-.openfoodfacts-result:hover {
-  border-color: #0095F6;
-  background: #F0F5FF;
-}
+  .products-table {
+    min-width: 800px;
+  }
 
-.openfoodfacts-result strong {
-  color: #262626;
-  font-weight: 600;
-  display: block;
-  margin-bottom: 4px;
-}
+  .products-table th,
+  .products-table td {
+    padding: 10px;
+    font-size: 12px;
+  }
 
-.openfoodfacts-result small {
-  color: #8E8E8E;
-  display: block;
-  font-size: 12px;
+  .btn-action {
+    padding: 4px 8px;
+    font-size: 11px;
+  }
+
+  .actions-cell {
+    flex-direction: column;
+  }
+
+  .bulk-actions {
+    flex-direction: column;
+    gap: 10px;
+    text-align: center;
+  }
+
+  .modal-content {
+    max-width: 95%;
+  }
 }
