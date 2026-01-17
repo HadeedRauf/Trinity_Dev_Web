@@ -1,22 +1,77 @@
-from rest_framework import viewsets, permissions
+from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from .models import Product, Customer, Invoice
-from .serializers import ProductSerializer, CustomerSerializer, InvoiceSerializer
+from rest_framework.views import APIView
+from .models import Product, Customer, Invoice, UserProfile
+from .serializers import ProductSerializer, CustomerSerializer, InvoiceSerializer, CustomTokenObtainPairSerializer, UserSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
+from django.contrib.auth.models import User
 import requests
-import time
+
+class CustomTokenObtainPairView(TokenObtainPairView):
+    serializer_class = CustomTokenObtainPairSerializer
+
+class RegisterCustomerView(APIView):
+    """Register a new customer user"""
+    permission_classes = [permissions.AllowAny]
+    
+    def post(self, request):
+        username = request.data.get('username')
+        email = request.data.get('email')
+        password = request.data.get('password')
+        first_name = request.data.get('first_name', '')
+        last_name = request.data.get('last_name', '')
+        
+        if not username or not email or not password:
+            return Response({
+                'error': 'username, email, and password are required'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        if User.objects.filter(username=username).exists():
+            return Response({
+                'error': 'Username already exists'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        if User.objects.filter(email=email).exists():
+            return Response({
+                'error': 'Email already exists'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        user = User.objects.create_user(
+            username=username,
+            email=email,
+            password=password,
+            first_name=first_name,
+            last_name=last_name
+        )
+        
+        # Create profile with customer role
+        profile = UserProfile.objects.create(
+            user=user,
+            role='customer'
+        )
+        
+        return Response({
+            'id': user.id,
+            'username': user.username,
+            'email': user.email,
+            'role': 'customer',
+            'message': 'Customer registered successfully'
+        }, status=status.HTTP_201_CREATED)
 
 class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    
+    def get_permissions(self):
+        if self.action == 'list' or self.action == 'retrieve':
+            permission_classes = [permissions.IsAuthenticated]
+        else:
+            permission_classes = [permissions.IsAuthenticated]
+        return [permission() for permission in permission_classes]
 
     def perform_create(self, serializer):
-        # Save first
         product = serializer.save()
-
-        # If caller provided openfood_query in the request data, try to enrich immediately
         query = None
         try:
             query = self.request.data.get('openfood_query')
@@ -32,7 +87,6 @@ class ProductViewSet(viewsets.ModelViewSet):
         return product
 
     def _fetch_openfoodfacts_first(self, query):
-        """Return a small dict with nutriments and serving_size for the first result, or None."""
         try:
             resp = requests.get('https://world.openfoodfacts.org/cgi/search.pl', params={
                 'search_terms': query,
@@ -48,13 +102,11 @@ class ProductViewSet(viewsets.ModelViewSet):
             p = products[0]
             return {'nutriments': p.get('nutriments', {}), 'serving_size': p.get('serving_size'), 'product_name': p.get('product_name')}
         except Exception as e:
-            # don't raise - log and return None
             print('OpenFoodFacts fetch error:', e)
             return None
 
     @action(detail=True, methods=['post'])
     def enrich(self, request, pk=None):
-        """Enrich a single product from OpenFoodFacts. POST body: {"query": "nutella"} or barcode."""
         product = self.get_object()
         query = request.data.get('query') or request.data.get('openfood_query')
         if not query:
@@ -77,5 +129,3 @@ class InvoiceViewSet(viewsets.ModelViewSet):
     queryset = Invoice.objects.all()
     serializer_class = InvoiceSerializer
     permission_classes = [permissions.IsAuthenticated]
-
-# Simple token view wrapper (use default from simplejwt in urls)

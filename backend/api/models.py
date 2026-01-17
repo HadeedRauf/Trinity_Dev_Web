@@ -37,3 +37,24 @@ class Customer(models.Model):
 class Invoice(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name='invoices')
     total = models.DecimalField(max_digits=10, decimal_places=2)
+
+
+from django.contrib.auth.models import User as DjangoUser
+
+# Extend Django's built-in User with a role field
+class UserProfile(models.Model):
+    ROLE_CHOICES = [
+        ('admin', 'Admin'),
+        ('customer', 'Customer'),
+    ]
+    
+    user = models.OneToOneField(DjangoUser, on_delete=models.CASCADE, related_name='profile')
+    role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='customer')
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return f"{self.user.username} ({self.role})"
+    
+    class Meta:
+        verbose_name = "User Profile"
+        verbose_name_plural = "User Profiles"

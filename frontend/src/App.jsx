@@ -1,115 +1,92 @@
-import { BrowserRouter, Routes, Route, Navigate, Link, useNavigate } from 'react-router-dom'
-import { AuthProvider, useAuth } from './context/AuthContext'
-import ErrorBoundary from './components/ErrorBoundary'
+import React from 'react'
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import Login from './pages/Login'
 import Dashboard from './pages/Dashboard'
+import CustomerDashboard from './pages/CustomerDashboard'
 import ProductManagement from './pages/ProductManagement'
-import CustomerManagement from './pages/CustomerManagement'
-import InvoiceManagement from './pages/InvoiceManagement'
-import './styles.css'
+import './App.css'
 
-function ProtectedRoute({ children }) {
-  const { user } = useAuth();
-  return user ? children : <Navigate to="/login" />;
-}
+// Protected Route Component
+function ProtectedRoute({ children, requiredRole = null }) {
+  const token = localStorage.getItem('access_token')
+  const userRole = localStorage.getItem('user_role')
 
-function Layout({ children }) {
-  const { user, logout } = useAuth();
-  const navigate = useNavigate();
+  if (!token) {
+    return <Navigate to="/login" replace />
+  }
 
-  const handleLogout = () => {
-    logout();
-    navigate('/login');
-  };
+  if (requiredRole && userRole !== requiredRole) {
+    // Redirect to appropriate dashboard based on role
+    if (userRole === 'admin') {
+      return <Navigate to="/dashboard" replace />
+    } else {
+      return <Navigate to="/customer" replace />
+    }
+  }
 
-  if (!user) return children;
-
-  return (
-    <div className="app-layout">
-      <nav className="sidebar">
-        <div className="sidebar-header">
-          <h2>🛒 Trinity</h2>
-          <p className="user-info">Welcome, {user.username}</p>
-        </div>
-        <ul className="nav-menu">
-          <li>
-            <Link to="/dashboard">📊 Dashboard</Link>
-          </li>
-          <li>
-            <Link to="/products">📦 Products</Link>
-          </li>
-          <li>
-            <Link to="/customers">👥 Customers</Link>
-          </li>
-          <li>
-            <Link to="/invoices">🧾 Invoices</Link>
-          </li>
-        </ul>
-        <button className="logout-btn" onClick={handleLogout}>
-          🚪 Logout
-        </button>
-      </nav>
-      <main className="main-content">
-        {children}
-      </main>
-    </div>
-  );
+  return children
 }
 
 function App() {
+  const token = localStorage.getItem('access_token')
+  const userRole = localStorage.getItem('user_role')
+
   return (
-    <ErrorBoundary>
-      <AuthProvider>
-        <BrowserRouter>
-          <Layout>
-            <Routes>
-              <Route path="/login" element={<Login />} />
-              <Route 
-                path="/dashboard" 
-                element={
-                  <ProtectedRoute>
-                    <ErrorBoundary>
-                      <Dashboard />
-                    </ErrorBoundary>
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/products" 
-                element={
-                  <ProtectedRoute>
-                    <ErrorBoundary>
-                      <ProductManagement />
-                    </ErrorBoundary>
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/customers" 
-                element={
-                  <ProtectedRoute>
-                    <ErrorBoundary>
-                      <CustomerManagement />
-                    </ErrorBoundary>
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/invoices" 
-                element={
-                  <ProtectedRoute>
-                    <ErrorBoundary>
-                      <InvoiceManagement />
-                    </ErrorBoundary>
-                  </ProtectedRoute>
-                } 
-              />
-              <Route path="/" element={<Navigate to="/dashboard" />} />
-            </Routes>
-          </Layout>
-        </BrowserRouter>
-      </AuthProvider>
-    </ErrorBoundary>
+    <Router>
+      <Routes>
+        {/* Login - Always accessible */}
+        <Route path="/login" element={<Login />} />
+
+        {/* Admin Dashboard - Only for admins */}
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute requiredRole="admin">
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Admin Products - Only for admins */}
+        <Route
+          path="/products"
+          element={
+            <ProtectedRoute requiredRole="admin">
+              <ProductManagement />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Customer Dashboard - Only for customers */}
+        <Route
+          path="/customer"
+          element={
+            <ProtectedRoute requiredRole="customer">
+              <CustomerDashboard />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Root redirect based on user role */}
+        <Route
+          path="/"
+          element={
+            token ? (
+              userRole === 'admin' ? (
+                <Navigate to="/dashboard" replace />
+              ) : (
+                <Navigate to="/customer" replace />
+              )
+            ) : (
+              <Navigate to="/login" replace />
+            )
+          }
+        />
+
+        {/* 404 Fallback */}
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </Router>
   )
 }
 

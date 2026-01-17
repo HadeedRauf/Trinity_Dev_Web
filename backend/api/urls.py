@@ -1,18 +1,16 @@
-from django.urls import path, include
-from rest_framework import routers
-from .views import ProductViewSet, CustomerViewSet, InvoiceViewSet
-from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
-from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
+from django.urls import path
+from rest_framework.routers import DefaultRouter
+from rest_framework_simplejwt.views import TokenRefreshView
+from .views import ProductViewSet, CustomerViewSet, InvoiceViewSet, CustomTokenObtainPairView, RegisterCustomerView
+from django.views.decorators.csrf import csrf_exempt
 
-router = routers.DefaultRouter()
-router.register(r'products', ProductViewSet)
-router.register(r'customers', CustomerViewSet)
-router.register(r'invoices', InvoiceViewSet)
+router = DefaultRouter()
+router.register(r'products', ProductViewSet, basename='product')
+router.register(r'customers', CustomerViewSet, basename='customer')
+router.register(r'invoices', InvoiceViewSet, basename='invoice')
 
 urlpatterns = [
-    path('schema/', SpectacularAPIView.as_view(), name='schema'),
-    path('schema/swagger-ui/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
-    path('', include(router.urls)),
-    path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('token/', csrf_exempt(CustomTokenObtainPairView.as_view()), name='token_obtain_pair'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-]
+    path('register/', csrf_exempt(RegisterCustomerView.as_view()), name='register_customer'),
+] + router.urls
