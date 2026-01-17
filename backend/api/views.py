@@ -7,9 +7,32 @@ from .serializers import ProductSerializer, CustomerSerializer, InvoiceSerialize
 from rest_framework_simplejwt.views import TokenObtainPairView
 from django.contrib.auth.models import User
 import requests
+import jwt
+from django.conf import settings
 
 class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
+    
+    def post(self, request, *args, **kwargs):
+        response = super().post(request, *args, **kwargs)
+        
+        # Extract role from token payload
+        if response.status_code == 200 and 'access' in response.data:
+            try:
+                # Decode the access token to get the role
+                token = response.data['access']
+                decoded = jwt.decode(token, settings.SECRET_KEY, algorithms=['HS256'])
+                role = decoded.get('role', 'customer')
+                username = decoded.get('username', '')
+                
+                # Add role to response
+                response.data['role'] = role
+                response.data['username'] = username
+            except Exception as e:
+                print(f'Error decoding token: {e}')
+                response.data['role'] = 'customer'
+        
+        return response
 
 class RegisterCustomerView(APIView):
     """Register a new customer user"""
