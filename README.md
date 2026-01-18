@@ -74,3 +74,4 @@ docker exec web_dev_trinity-backend-1 python manage.py test
 - Set up CI/CD pipeline
 - Write technical documentation and UML diagrams
 # Deployment successful
+
