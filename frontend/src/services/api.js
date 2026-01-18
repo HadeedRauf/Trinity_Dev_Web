@@ -1,6 +1,20 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:8000/api';
+// Dynamically set API URL based on current hostname
+const getAPIUrl = () => {
+  const hostname = window.location.hostname;
+  const protocol = window.location.protocol;
+  
+  // If running on localhost/127.0.0.1, use localhost:8000
+  if (hostname === 'localhost' || hostname === '127.0.0.1') {
+    return 'http://localhost:8000/api';
+  }
+  
+  // Otherwise use the current hostname with port 8000
+  return `${protocol}//${hostname}:8000/api`;
+};
+
+const API_URL = getAPIUrl();
 
 const api = axios.create({
   baseURL: API_URL,
@@ -43,63 +57,5 @@ api.interceptors.response.use(
     return Promise.reject(error);
   }
 );
-
-// Authentication
-export const login = async (username, password) => {
-  const response = await api.post('/token/', { username, password });
-  return response.data;
-};
-
-export const register = async (userData) => {
-  const response = await api.post('/register/', userData);
-  return response.data;
-};
-
-export const logout = () => {
-  localStorage.removeItem('access_token');
-  localStorage.removeItem('refresh_token');
-  localStorage.removeItem('user_role');
-  localStorage.removeItem('username');
-};
-
-// Products
-export const getProducts = () => api.get('/products/');
-export const getProduct = (id) => api.get(`/products/${id}/`);
-export const createProduct = (data) => api.post('/products/', data);
-export const updateProduct = (id, data) => api.put(`/products/${id}/`, data);
-export const deleteProduct = (id) => api.delete(`/products/${id}/`);
-
-// Customers
-export const getCustomers = () => api.get('/customers/');
-export const getCustomer = (id) => api.get(`/customers/${id}/`);
-export const createCustomer = (data) => api.post('/customers/', data);
-export const updateCustomer = (id, data) => api.put(`/customers/${id}/`, data);
-export const deleteCustomer = (id) => api.delete(`/customers/${id}/`);
-
-// Invoices
-export const getInvoices = () => api.get('/invoices/');
-export const getInvoice = (id) => api.get(`/invoices/${id}/`);
-export const createInvoice = (data) => api.post('/invoices/', data);
-export const updateInvoice = (id, data) => api.put(`/invoices/${id}/`, data);
-export const deleteInvoice = (id) => api.delete(`/invoices/${id}/`);
-
-// OpenFoodFacts
-export const searchOpenFoodFacts = async (query) => {
-  try {
-    const response = await axios.get('https://world.openfoodfacts.org/cgi/search.pl', {
-      params: {
-        search_terms: query,
-        search_simple: 1,
-        json: 1,
-        page_size: 1,
-      },
-    });
-    const products = response.data.products || [];
-    return products;
-  } catch (error) {
-    console.error('OpenFoodFacts search error:', error);
-    return [];
-  }
-};
 
 export default api;
