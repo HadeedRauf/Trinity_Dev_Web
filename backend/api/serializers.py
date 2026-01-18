@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Product, Customer, Invoice, UserProfile
+from .models import Product, Customer, Invoice, InvoiceItem, UserProfile
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from django.contrib.auth.models import User
 
@@ -41,7 +41,18 @@ class CustomerSerializer(serializers.ModelSerializer):
         model = Customer
         fields = '__all__'
 
+class InvoiceItemSerializer(serializers.ModelSerializer):
+    product = ProductSerializer(read_only=True)
+    product_id = serializers.IntegerField(write_only=True)
+    
+    class Meta:
+        model = InvoiceItem
+        fields = ['id', 'product', 'product_id', 'quantity', 'price']
+
 class InvoiceSerializer(serializers.ModelSerializer):
+    items = InvoiceItemSerializer(many=True, read_only=True, source='items')
+    customer_name = serializers.CharField(source='customer.first_name', read_only=True)
+    
     class Meta:
         model = Invoice
-        fields = '__all__'
+        fields = ['id', 'customer', 'customer_name', 'total', 'status', 'created_at', 'updated_at', 'items']

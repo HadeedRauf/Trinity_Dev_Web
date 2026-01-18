@@ -134,11 +134,11 @@ class ProductViewSet(viewsets.ModelViewSet):
         query = request.data.get('query') or request.data.get('openfood_query')
         if not query:
             return Response({'detail': 'query is required'}, status=400)
-
+        
         of = self._fetch_openfoodfacts_first(query)
         if not of:
             return Response({'detail': 'no_openfoodfacts_result'}, status=404)
-
+        
         product.nutritional_info = of
         product.save(update_fields=['nutritional_info'])
         return Response({'detail': 'enriched', 'nutritional_info': of})
@@ -149,6 +149,21 @@ class CustomerViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
 class InvoiceViewSet(viewsets.ModelViewSet):
-    queryset = Invoice.objects.all()
     serializer_class = InvoiceSerializer
     permission_classes = [permissions.IsAuthenticated]
+    
+    def get_queryset(self):
+        user = self.request.user
+        try:
+            profile = UserProfile.objects.get(user=user)
+            # Admin sees all invoices
+            if profile.role == 'admin':
+                return Invoice.objects.all().prefetch_related('items', 'items__product')
+            # Customer sees only their invoices
+            else:
+                customer = Customer.objects.filter(id=profile.user.id).first()
+                if customer:
+                    return Invoice.objects.filter(customer=customer).prefetch_related('items', 'items__product')
+                return Invoice.objects.none()
+        except UserProfile.DoesNotExist:
+            return Invoice.objects.none()
