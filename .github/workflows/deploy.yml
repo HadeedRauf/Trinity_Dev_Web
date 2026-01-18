@@ -8,7 +8,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
+  IMAGE_NAME: ${{ github.repository_owner }}/trinity_dev_web
 
 jobs:
   build:
@@ -87,7 +87,7 @@ jobs:
           # Set environment variables
           export DOCKER_CONTENT_TRUST=0
           export REGISTRY=ghcr.io
-          export IMAGE_NAME=HadeedRauf/Trinity_Dev_Web
+          export IMAGE_NAME=hadeedrauf/trinity_dev_web
           export IMAGE_TAG=${{ github.sha }}
           
           # Update docker-compose to use new images
