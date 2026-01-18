@@ -42,6 +42,10 @@ jobs:
             git pull origin main
           fi
           
+          # Set environment variables for Docker build
+          export DOCKER_BUILDKIT=0
+          export COMPOSE_DOCKER_CLI_BUILD=0
+          
           # Stop running containers and remove everything
           echo "🛑 Stopping and removing containers..."
           docker-compose down -v || true
