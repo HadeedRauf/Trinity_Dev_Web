@@ -68,10 +68,13 @@ class Command(BaseCommand):
             
             # Create customer record
             customer, _ = Customer.objects.get_or_create(
-                user=user,
+                first_name=cust_data['first_name'],
+                last_name=cust_data['last_name'],
                 defaults={
                     'phone': f'555-{random.randint(1000, 9999)}',
-                    'address': f'{random.randint(100, 999)} Main St'
+                    'address': f'{random.randint(100, 999)} Main St',
+                    'city': 'Sample City',
+                    'country': 'USA'
                 }
             )
             customers.append(customer)
