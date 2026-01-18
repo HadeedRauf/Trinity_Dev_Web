@@ -14,10 +14,6 @@ class Migration(migrations.Migration):
             name='product',
             options={'ordering': ['-created_at']},
         ),
-        migrations.RemoveField(
-            model_name='invoice',
-            name='created_at',
-        ),
         migrations.AddField(
             model_name='product',
             name='barcode',
@@ -37,5 +33,20 @@ class Migration(migrations.Migration):
             model_name='product',
             name='updated_at',
             field=models.DateTimeField(auto_now=True, null=True),
+        ),
+        migrations.AddField(
+            model_name='invoice',
+            name='created_at',
+            field=models.DateTimeField(auto_now_add=True, null=True),
+        ),
+        migrations.AddField(
+            model_name='invoice',
+            name='updated_at',
+            field=models.DateTimeField(auto_now=True, null=True),
+        ),
+        migrations.AddField(
+            model_name='invoice',
+            name='status',
+            field=models.CharField(blank=True, max_length=20, choices=[('pending', 'Pending'), ('completed', 'Completed'), ('cancelled', 'Cancelled')], default='completed'),
         ),
     ]
