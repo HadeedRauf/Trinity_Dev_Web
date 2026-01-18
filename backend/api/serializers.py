@@ -7,14 +7,11 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod
     def get_token(cls, user):
         token = super().get_token(user)
-        
-        # Add user role to token payload
         try:
             profile = UserProfile.objects.get(user=user)
             token['role'] = profile.role
         except UserProfile.DoesNotExist:
-            token['role'] = 'customer'  # default
-        
+            token['role'] = 'customer'
         token['username'] = user.username
         return token
 
@@ -50,7 +47,7 @@ class InvoiceItemSerializer(serializers.ModelSerializer):
         fields = ['id', 'product', 'product_id', 'quantity', 'price']
 
 class InvoiceSerializer(serializers.ModelSerializer):
-    items = InvoiceItemSerializer(many=True, read_only=True, source='items')
+    items = InvoiceItemSerializer(many=True, read_only=True)
     customer_name = serializers.CharField(source='customer.first_name', read_only=True)
     
     class Meta:
