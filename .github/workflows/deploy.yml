@@ -42,12 +42,15 @@ jobs:
             git pull origin main
           fi
           
-          # Stop running containers
-          echo "🛑 Stopping containers..."
-          docker-compose down || true
+          # Stop running containers and remove everything
+          echo "🛑 Stopping and removing containers..."
+          docker-compose down -v || true
+          docker-compose rm -f || true
           
-          # Remove old images to ensure fresh build
-          echo "🧹 Cleaning up old images..."
+          # Forcefully remove containers and networks
+          echo "🧹 Aggressive cleanup..."
+          docker container prune -f --filter "label!=keep" || true
+          docker network prune -f || true
           docker rmi -f trinity_dev_web-backend trinity_dev_web-frontend 2>/dev/null || true
           docker image prune -af --filter "until=24h" || true
           
