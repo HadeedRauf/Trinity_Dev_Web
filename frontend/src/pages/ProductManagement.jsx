@@ -14,6 +14,7 @@ export default function ProductManagement() {
     picture: '',
     category: '',
     quantity: '',
+    nutrition_score: '',
     nutritional_info: {}
   });
   const [searchTerm, setSearchTerm] = useState('');
@@ -123,6 +124,7 @@ export default function ProductManagement() {
       picture: product.picture || '',
       category: product.category || '',
       quantity: product.quantity || '',
+      nutrition_score: product.nutrition_score || '',
       nutritional_info: product.nutritional_info || {}
     });
     setShowModal(true);
@@ -136,6 +138,7 @@ export default function ProductManagement() {
       picture: '',
       category: '',
       quantity: '',
+      nutrition_score: '',
       nutritional_info: {}
     });
     setEditingProduct(null);
@@ -151,6 +154,20 @@ export default function ProductManagement() {
 
       const ofProduct = results[0];
       const nutriments = ofProduct.nutriments || {};
+      
+      // Extract per-100g nutrition values
+      const nutritional_info = {
+        energy_kcal_100g: parseFloat(nutriments['energy-kcal_100g'] || 0),
+        carbohydrates_100g: parseFloat(nutriments.carbohydrates_100g || 0),
+        fat_100g: parseFloat(nutriments.fat_100g || 0),
+        proteins_100g: parseFloat(nutriments.proteins_100g || 0),
+        sugars_100g: parseFloat(nutriments.sugars_100g || 0),
+        salt_100g: parseFloat(nutriments.salt_100g || 0),
+        fiber_100g: parseFloat(nutriments.fiber_100g || 0)
+      };
+      
+      // Get nutrition score (convert to uppercase: a, b, c, d, e -> A, B, C, D, E)
+      const nutrition_score = (ofProduct.nutrition_grade_fr || ofProduct.nutrition_grades || 'N').toUpperCase();
 
       setFormData({
         ...formData,
@@ -158,7 +175,8 @@ export default function ProductManagement() {
         brand: ofProduct.brands || formData.brand,
         picture: ofProduct.image_url || formData.picture || ofProduct.image_small_url || '',
         category: ofProduct.categories || formData.category,
-        nutritional_info: { nutriments: nutriments, serving_size: ofProduct.serving_size }
+        nutritional_info: nutritional_info,
+        nutrition_score: nutrition_score
       });
     } catch (err) {
       console.error('OpenFoodFacts error:', err);
@@ -279,6 +297,7 @@ export default function ProductManagement() {
                   <th onClick={() => handleSort('quantity')} className="sortable">
                     Quantity <SortIcon columnKey="quantity" />
                   </th>
+                  <th>Nutrition Score</th>
                   <th>Actions</th>
                 </tr>
               </thead>
@@ -307,6 +326,25 @@ export default function ProductManagement() {
                     </td>
                     <td className="quantity-cell">
                       {product.quantity || 0} pcs
+                    </td>
+                    <td className="nutrition-score-cell">
+                      <span style={{
+                        display: 'flex',
+                        width: '28px',
+                        height: '28px',
+                        borderRadius: '50%',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontWeight: 'bold',
+                        color: 'white',
+                        backgroundColor: product.nutrition_score === 'A' ? '#2ecc71' : 
+                                       product.nutrition_score === 'B' ? '#3498db' : 
+                                       product.nutrition_score === 'C' ? '#f39c12' : 
+                                       product.nutrition_score === 'D' ? '#e67e22' : 
+                                       product.nutrition_score === 'E' ? '#e74c3c' : '#95a5a6'
+                      }}>
+                        {product.nutrition_score || 'N/A'}
+                      </span>
                     </td>
                     <td className="actions-cell">
                       <button 
@@ -431,6 +469,22 @@ export default function ProductManagement() {
                   className="form-input"
                 />
               </div>
+
+              {editingProduct && editingProduct.nutritional_info && (
+                <div style={{ marginBottom: '15px', padding: '10px', backgroundColor: '#f5f5f5', borderRadius: '4px' }}>
+                  <label style={{ fontWeight: 'bold', marginBottom: '10px', display: 'block' }}>Nutritional Information (per 100g)</label>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', fontSize: '0.9em' }}>
+                    <div>Energy: {editingProduct.nutritional_info.energy_kcal_100g ?? 'N/A'} kcal</div>
+                    <div>Protein: {editingProduct.nutritional_info.proteins_100g ?? 'N/A'} g</div>
+                    <div>Fat: {editingProduct.nutritional_info.fat_100g ?? 'N/A'} g</div>
+                    <div>Carbs: {editingProduct.nutritional_info.carbohydrates_100g ?? 'N/A'} g</div>
+                    <div>Sugars: {editingProduct.nutritional_info.sugars_100g ?? 'N/A'} g</div>
+                    <div>Fiber: {editingProduct.nutritional_info.fiber_100g ?? 'N/A'} g</div>
+                    <div>Salt: {editingProduct.nutritional_info.salt_100g ?? 'N/A'} g</div>
+                    <div>Score: {editingProduct.nutrition_score || 'N/A'}</div>
+                  </div>
+                </div>
+              )}
 
               <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
                 <button type="submit" className="btn-primary">

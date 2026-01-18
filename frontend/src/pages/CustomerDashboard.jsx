@@ -292,35 +292,27 @@ export default function CustomerDashboard() {
 
   return (
     <div className="customer-dashboard">
-      <nav className="navbar">
-        <div className="navbar-content">
-          <h1 className="store-name">🏪 Trinity Store</h1>
-          <div className="tab-navigation">
-            <button 
-              className={`tab-btn ${activeTab === 'shop' ? 'active' : ''}`}
-              onClick={() => setActiveTab('shop')}
-            >
-              🛍️ Shop
-            </button>
-            <button 
-              className={`tab-btn ${activeTab === 'cart' ? 'active' : ''}`}
-              onClick={() => setActiveTab('cart')}
-            >
-              🛒 Cart ({cart.length})
-            </button>
-            <button 
-              className={`tab-btn ${activeTab === 'invoices' ? 'active' : ''}`}
-              onClick={() => setActiveTab('invoices')}
-            >
-              🧾 My Invoices ({invoices.length})
-            </button>
-          </div>
-          <div className="navbar-actions">
-            <span className="welcome-user">Welcome, {username}!</span>
-            <button className="btn-logout" onClick={handleLogout}>Logout</button>
-          </div>
-        </div>
-      </nav>
+      {/* Tab Navigation */}
+      <div className="tab-navigation-bar">
+        <button 
+          className={`tab-btn ${activeTab === 'shop' ? 'active' : ''}`}
+          onClick={() => setActiveTab('shop')}
+        >
+          🛍️ Shop
+        </button>
+        <button 
+          className={`tab-btn ${activeTab === 'cart' ? 'active' : ''}`}
+          onClick={() => setActiveTab('cart')}
+        >
+          🛒 Cart ({cart.length})
+        </button>
+        <button 
+          className={`tab-btn ${activeTab === 'invoices' ? 'active' : ''}`}
+          onClick={() => setActiveTab('invoices')}
+        >
+          🧾 Invoices ({invoices.length})
+        </button>
+      </div>
 
       <div className="dashboard-container">
         {error && <div className="error-message">{error}</div>}
@@ -577,6 +569,44 @@ export default function CustomerDashboard() {
                     <span className="score-e">E = Very Poor</span>
                   </div>
                 </div>
+              </div>
+
+              <div className="nutritional-facts">
+                <h3>Nutritional Information (per 100g)</h3>
+                {selectedProduct.nutritional_info ? (
+                  <div className="nutrition-grid">
+                    <div className="nutrition-item">
+                      <span className="label">Energy</span>
+                      <span className="value">{selectedProduct.nutritional_info.energy_kcal_100g ?? 'N/A'} kcal</span>
+                    </div>
+                    <div className="nutrition-item">
+                      <span className="label">Protein</span>
+                      <span className="value">{selectedProduct.nutritional_info.proteins_100g ?? 'N/A'} g</span>
+                    </div>
+                    <div className="nutrition-item">
+                      <span className="label">Fat</span>
+                      <span className="value">{selectedProduct.nutritional_info.fat_100g ?? 'N/A'} g</span>
+                    </div>
+                    <div className="nutrition-item">
+                      <span className="label">Carbs</span>
+                      <span className="value">{selectedProduct.nutritional_info.carbohydrates_100g ?? 'N/A'} g</span>
+                    </div>
+                    <div className="nutrition-item">
+                      <span className="label">Sugars</span>
+                      <span className="value">{selectedProduct.nutritional_info.sugars_100g ?? 'N/A'} g</span>
+                    </div>
+                    <div className="nutrition-item">
+                      <span className="label">Fiber</span>
+                      <span className="value">{selectedProduct.nutritional_info.fiber_100g ?? 'N/A'} g</span>
+                    </div>
+                    <div className="nutrition-item">
+                      <span className="label">Salt</span>
+                      <span className="value">{selectedProduct.nutritional_info.salt_100g ?? 'N/A'} g</span>
+                    </div>
+                  </div>
+                ) : (
+                  <p className="no-nutrition-data">No nutritional data available</p>
+                )}
               </div>
 
               <div className="product-details-modal">

@@ -6,6 +6,8 @@ import CustomerDashboard from './pages/CustomerDashboard'
 import ProductManagement from './pages/ProductManagement'
 import Navbar from './components/Navbar'
 import './App.css'
+import CustomerManagement from './pages/CustomerManagement'
+import InvoiceManagement from './pages/InvoiceManagement'
 
 // Protected Route Component
 function ProtectedRoute({ children, requiredRole = null }) {
@@ -69,28 +71,22 @@ function App() {
           }
         />
 
-        {/* Customers Management - Only for admins (TODO) */}
+        {/* Customers Management - Only for admins */}
         <Route
           path="/customers"
           element={
             <ProtectedRoute requiredRole="admin">
-              <div className="page-placeholder">
-                <h2>👥 Customer Management</h2>
-                <p>Coming soon...</p>
-              </div>
+              <CustomerManagement />
             </ProtectedRoute>
           }
         />
 
-        {/* Invoices Management - Only for admins (TODO) */}
+        {/* Invoices Management - Only for admins */}
         <Route
           path="/invoices"
           element={
             <ProtectedRoute requiredRole="admin">
-              <div className="page-placeholder">
-                <h2>🧾 Invoice Management</h2>
-                <p>Coming soon...</p>
-              </div>
+              <InvoiceManagement />
             </ProtectedRoute>
           }
         />

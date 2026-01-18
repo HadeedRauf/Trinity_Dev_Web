@@ -423,27 +423,31 @@ export default function Dashboard() {
                   <div className="nutrition-grid">
                     <div className="nutrition-item">
                       <span className="label">Energy</span>
-                      <span className="value">{selectedProduct.nutritional_info.energy_kcal ?? 'N/A'} kcal</span>
+                      <span className="value">{selectedProduct.nutritional_info.energy_kcal_100g ?? 'N/A'} kcal</span>
                     </div>
                     <div className="nutrition-item">
                       <span className="label">Protein</span>
-                      <span className="value">{selectedProduct.nutritional_info.protein_g ?? 'N/A'} g</span>
+                      <span className="value">{selectedProduct.nutritional_info.proteins_100g ?? 'N/A'} g</span>
                     </div>
                     <div className="nutrition-item">
                       <span className="label">Fat</span>
-                      <span className="value">{selectedProduct.nutritional_info.fat_g ?? 'N/A'} g</span>
+                      <span className="value">{selectedProduct.nutritional_info.fat_100g ?? 'N/A'} g</span>
                     </div>
                     <div className="nutrition-item">
-                      <span className="label">Carbohydrates</span>
-                      <span className="value">{selectedProduct.nutritional_info.carbs_g ?? 'N/A'} g</span>
+                      <span className="label">Carbs</span>
+                      <span className="value">{selectedProduct.nutritional_info.carbohydrates_100g ?? 'N/A'} g</span>
+                    </div>
+                    <div className="nutrition-item">
+                      <span className="label">Sugars</span>
+                      <span className="value">{selectedProduct.nutritional_info.sugars_100g ?? 'N/A'} g</span>
                     </div>
                     <div className="nutrition-item">
                       <span className="label">Fiber</span>
-                      <span className="value">{selectedProduct.nutritional_info.fiber_g ?? 'N/A'} g</span>
+                      <span className="value">{selectedProduct.nutritional_info.fiber_100g ?? 'N/A'} g</span>
                     </div>
                     <div className="nutrition-item">
                       <span className="label">Salt</span>
-                      <span className="value">{selectedProduct.nutritional_info.salt_g ?? 'N/A'} g</span>
+                      <span className="value">{selectedProduct.nutritional_info.salt_100g ?? 'N/A'} g</span>
                     </div>
                   </div>
                 ) : (
