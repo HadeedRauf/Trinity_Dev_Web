@@ -501,3 +501,389 @@
     max-width: 95%;
   }
 }
+
+/* Tab Navigation */
+.tab-navigation {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.tab-btn {
+  padding: 10px 15px;
+  background: transparent;
+  color: #ecf0f1;
+  border: 2px solid transparent;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  transition: all 0.3s;
+}
+
+.tab-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.tab-btn.active {
+  background: #27ae60;
+  border-color: #27ae60;
+}
+
+/* Add to Cart Button */
+.btn-add-cart {
+  width: 100%;
+  margin-top: 10px;
+  padding: 10px;
+  background: #3498db;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.2s;
+}
+
+.btn-add-cart:hover {
+  background: #2980b9;
+}
+
+/* Cart Container */
+.cart-container {
+  background: white;
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.empty-cart {
+  text-align: center;
+  padding: 60px 20px;
+  color: #7f8c8d;
+}
+
+.empty-cart p {
+  font-size: 18px;
+  margin-bottom: 20px;
+}
+
+.btn-continue-shopping {
+  padding: 12px 30px;
+  background: #3498db;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  transition: background 0.2s;
+}
+
+.btn-continue-shopping:hover {
+  background: #2980b9;
+}
+
+/* Cart Table */
+.cart-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 30px;
+}
+
+.cart-table thead {
+  background: #f5f5f5;
+}
+
+.cart-table th,
+.cart-table td {
+  padding: 15px;
+  border: 1px solid #ecf0f1;
+  text-align: left;
+}
+
+.cart-table th {
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.quantity-input {
+  width: 60px;
+  padding: 5px;
+  border: 1px solid #bdc3c7;
+  border-radius: 4px;
+  text-align: center;
+}
+
+.btn-remove {
+  padding: 8px 12px;
+  background: #e74c3c;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  transition: background 0.2s;
+}
+
+.btn-remove:hover {
+  background: #c0392b;
+}
+
+/* Cart Summary */
+.cart-summary {
+  background: #f9f9f9;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  border: 1px solid #ecf0f1;
+}
+
+.cart-summary h3 {
+  margin-top: 0;
+  color: #2c3e50;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid #ecf0f1;
+}
+
+.summary-row.total {
+  font-weight: 600;
+  font-size: 16px;
+  border-bottom: none;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 2px solid #ecf0f1;
+  color: #27ae60;
+}
+
+.cart-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.btn-checkout {
+  flex: 1;
+  padding: 12px 30px;
+  background: #27ae60;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  transition: background 0.2s;
+}
+
+.btn-checkout:hover {
+  background: #229954;
+}
+
+/* Invoices Container */
+.invoices-container {
+  background: white;
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.no-invoices {
+  text-align: center;
+  padding: 60px 20px;
+  color: #7f8c8d;
+}
+
+.no-invoices p {
+  font-size: 18px;
+  margin-bottom: 20px;
+}
+
+.btn-shop-now {
+  padding: 12px 30px;
+  background: #3498db;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  transition: background 0.2s;
+}
+
+.btn-shop-now:hover {
+  background: #2980b9;
+}
+
+/* Invoices Table */
+.invoices-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.invoices-table thead {
+  background: #f5f5f5;
+}
+
+.invoices-table th,
+.invoices-table td {
+  padding: 15px;
+  border: 1px solid #ecf0f1;
+  text-align: left;
+}
+
+.invoices-table th {
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.status-badge.completed {
+  background: #d5f4e6;
+  color: #27ae60;
+}
+
+.btn-view,
+.btn-download {
+  padding: 8px 12px;
+  margin-right: 5px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  transition: all 0.2s;
+  display: inline-block;
+}
+
+.btn-view {
+  background: #3498db;
+  color: white;
+}
+
+.btn-view:hover {
+  background: #2980b9;
+}
+
+.btn-download {
+  background: #9b59b6;
+  color: white;
+}
+
+.btn-download:hover {
+  background: #8e44ad;
+}
+
+/* Invoice Modal */
+.invoice-modal {
+  padding: 20px;
+}
+
+.invoice-modal h2 {
+  color: #2c3e50;
+  margin-bottom: 20px;
+  border-bottom: 2px solid #ecf0f1;
+  padding-bottom: 10px;
+}
+
+.invoice-details {
+  background: #f9f9f9;
+  padding: 15px;
+  border-radius: 4px;
+  margin-bottom: 20px;
+}
+
+.invoice-details p {
+  margin: 8px 0;
+  color: #2c3e50;
+}
+
+/* Invoice Items Table */
+.invoice-items-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+.invoice-items-table thead {
+  background: #f5f5f5;
+}
+
+.invoice-items-table th,
+.invoice-items-table td {
+  padding: 12px;
+  border: 1px solid #ecf0f1;
+  text-align: left;
+}
+
+.invoice-items-table th {
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.invoice-total {
+  text-align: right;
+  padding: 20px 0;
+  border-top: 2px solid #ecf0f1;
+  border-bottom: 2px solid #ecf0f1;
+}
+
+.invoice-total h3 {
+  color: #27ae60;
+  margin: 0;
+}
+
+.invoice-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+
+.modal-content.large {
+  max-width: 900px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .tab-navigation {
+    flex-wrap: wrap;
+  }
+
+  .cart-table,
+  .invoices-table,
+  .invoice-items-table {
+    font-size: 14px;
+  }
+
+  .cart-table th,
+  .cart-table td,
+  .invoices-table th,
+  .invoices-table td {
+    padding: 10px;
+  }
+
+  .cart-actions {
+    flex-direction: column;
+  }
+
+  .btn-view,
+  .btn-download {
+    margin-bottom: 5px;
+  }
+
+  .invoice-actions {
+    flex-direction: column;
+  }
+}
