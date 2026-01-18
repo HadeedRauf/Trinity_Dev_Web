@@ -43,16 +43,17 @@ jobs:
           fi
           
           # Stop running containers
-          echo "� Stopping containers..."
+          echo "🛑 Stopping containers..."
           docker-compose down || true
           
           # Remove old images to ensure fresh build
           echo "🧹 Cleaning up old images..."
+          docker rmi -f trinity_dev_web-backend trinity_dev_web-frontend 2>/dev/null || true
           docker image prune -af --filter "until=24h" || true
           
-          # Build images locally
+          # Build images locally using standard docker-compose
           echo "🔨 Building Docker images..."
-          docker-compose build --no-cache
+          DOCKER_BUILDKIT=0 COMPOSE_DOCKER_CLI_BUILD=0 docker-compose build
           
           # Start new containers
           echo "🚀 Starting new containers..."
