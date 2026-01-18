@@ -364,6 +364,13 @@ export default function CustomerDashboard() {
                 <div className="products-grid">
                   {filteredProducts.map(product => (
                     <div key={product.id} className="product-card">
+                      <div className="product-image">
+                        {product.picture ? (
+                          <img src={product.picture} alt={product.name} />
+                        ) : (
+                          <div className="no-image">📦 No Image</div>
+                        )}
+                      </div>
                       <div className="product-info">
                         <h3>{product.name}</h3>
                         <p className="brand">{product.brand || 'Brand Unknown'}</p>

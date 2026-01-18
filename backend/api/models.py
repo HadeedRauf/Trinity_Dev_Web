@@ -37,6 +37,28 @@ class Customer(models.Model):
 class Invoice(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name='invoices')
     total = models.DecimalField(max_digits=10, decimal_places=2)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    status = models.CharField(max_length=20, choices=[
+        ('pending', 'Pending'),
+        ('completed', 'Completed'),
+        ('cancelled', 'Cancelled'),
+    ], default='completed')
+
+    def __str__(self):
+        return f"Invoice #{self.id} - {self.customer} - ${self.total}"
+
+    class Meta:
+        ordering = ['-created_at']
+
+class InvoiceItem(models.Model):
+    invoice = models.ForeignKey(Invoice, on_delete=models.CASCADE, related_name='items')
+    product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True)
+    quantity = models.IntegerField(default=1)
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+    
+    def __str__(self):
+        return f"{self.product.name} x {self.quantity}"
 
 
 from django.contrib.auth.models import User as DjangoUser
