@@ -16,6 +16,8 @@ Options:
   -d, --dir       Remote directory containing the repo (default: /home/hadeed/Trinity_Store_Backup/backend)
   -n, --node      Pytest node id to run (e.g. api/tests.py::TestClass::test_method). If omitted runs full file `api/tests.py`.
   -p, --port      SSH port (default: 22)
+  -y, --yes       Don't prompt for confirmation (non-interactive)
+  -o, --opts      Extra pytest options to append to the remote pytest command (quote if needed)
   -h, --help      Show this help and exit
 
 Examples:
@@ -65,21 +67,28 @@ else
   PYTEST_TARGET="$NODE"
 fi
 
+PYTEST_OPTS=${PYTEST_OPTS:-}
+
 SSH_OPTS=( -i "${KEY}" -o IdentitiesOnly=yes -p "${PORT}" )
 
 # show what we'll run
 echo "SSH: ${USERHOST} (port ${PORT})"
 echo "Remote dir: ${REMOTE_DIR}"
 echo "Pytest target: ${PYTEST_TARGET}"
+if [[ -n "$PYTEST_OPTS" ]]; then
+  echo "Additional pytest options: ${PYTEST_OPTS}"
+fi
 
 echo
-read -p "Proceed? [y/N] " confirm || true
-confirm=${confirm:-N}
-if [[ "$confirm" != "y" && "$confirm" != "Y" ]]; then
-  echo "Aborted by user"
-  exit 0
+if [[ -z "${YES:-}" ]]; then
+  read -p "Proceed? [y/N] " confirm || true
+  confirm=${confirm:-N}
+  if [[ "$confirm" != "y" && "$confirm" != "Y" ]]; then
+    echo "Aborted by user"
+    exit 0
+  fi
 fi
 
 # Run the remote command
 ssh "${SSH_OPTS[@]}" ${USERHOST} \
-  "cd \"${REMOTE_DIR}\" && pytest -q ${PYTEST_TARGET}"
+  "cd \"${REMOTE_DIR}\" && pytest -q ${PYTEST_TARGET} ${PYTEST_OPTS}"
